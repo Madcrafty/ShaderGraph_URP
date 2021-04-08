@@ -36,14 +36,13 @@ public class Gun : MonoBehaviour
         chargeMeter = transform.GetChild(3).GetChild(0).GetComponent<Slider>();
         laser = GetComponent<LineRenderer>();
         barrel = transform.GetChild(2).GetComponent<Collider>();
-        originPoint = barrel.bounds.center;
+        originPoint = flash.transform.position;
+        laser.SetPosition(0, originPoint);
     }
 
     // Update is called once per frame
     void Update()
     {
-        originPoint = barrel.bounds.center;
-        laser.SetPosition(0, originPoint);
         if (capacity < maxCapacity)
         {
             elapsedShootTime += Time.deltaTime;
@@ -82,6 +81,11 @@ public class Gun : MonoBehaviour
         {
             smoke.Stop();
         }
+    }
+    private void FixedUpdate()
+    {
+        originPoint = flash.transform.position;
+        laser.SetPosition(0, originPoint);
     }
     public void ShootLaser()
     {

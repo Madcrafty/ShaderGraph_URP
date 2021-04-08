@@ -7,13 +7,7 @@ using TMPro;
 public class Raycast : MonoBehaviour
 {
     public TextMeshProUGUI output;
-    //public LayerMask mask;
-    //private Camera cam;
-
-    //private void Awake()
-    //{
-    //    cam = GetComponent<Camera>();
-    //}
+    //public GameObject lookfocus;
 
     // Update is called once per frame
     void Update()
@@ -24,6 +18,7 @@ public class Raycast : MonoBehaviour
         if (Physics.Raycast(ray, out hitInfo, 500, LayerMask.GetMask("Default")) == true)
         {
             output.text = hitInfo.transform.name;
+            //lookfocus.transform.position = hitInfo.transform.position;
             if (hitInfo.transform.GetComponent<Button>() != null)
             {
                 if (Input.GetMouseButtonDown(0))
