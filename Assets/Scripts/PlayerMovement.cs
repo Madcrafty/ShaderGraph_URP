@@ -9,6 +9,8 @@ namespace Scripts.Movement
         #region PUBLIC FIELDS
         [Header(header: "Aim Settings")]
         public float lookSpeed = 2.0f;
+        public Transform cam;
+        public float turnSmoothTime = 0.1f;
 
         [Header(header: "Walk / Run Settings")]
         public float walkSpeed;
@@ -36,7 +38,12 @@ namespace Scripts.Movement
         #endregion
 
         #region PRIVATE FIELDS
-
+        private PlayerControls controls;
+        private CharacterController controller;
+        private Vector3 direction;
+        //private GameManager gm;
+        RaycastHit[] hitInfo;
+        float turnSmoothVelocity;
         private float m_xAxis;
         private float m_zAxis;
         private Rigidbody m_rb;
@@ -47,12 +54,13 @@ namespace Scripts.Movement
         public float m_distanceFromPlayerToGround;
         public bool m_playerIsGrounded;
         public bool m_playerJumpStarted;
-        private Camera cam;
+        //private Camera cam;
         private float rotationX;
         private float lookXLimit = 90.0f;
         private float healRate = 10.0f;
         private float elapsedHitTime;
         private Animator animator;
+        
         #endregion
 
         #region jump presets
@@ -62,14 +70,33 @@ namespace Scripts.Movement
         #endregion
 
         #region MONODEVELOP ROUTINES
-
+        private void Awake()
+        {
+            //gm = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+            controls = new PlayerControls();
+            //controller = GetComponent<CharacterController>();
+        }
+        private void OnEnable()
+        {
+            controls.Enable();
+            controls.Player.Move.performed += ctx => Move(ctx.ReadValue<Vector2>());
+        }
+        private void OnDisable()
+        {
+            controls.Disable();
+            controls.Player.Move.performed -= ctx => Move(ctx.ReadValue<Vector2>());
+        }
+        private void Move(Vector2 input)
+        {
+            direction = new Vector3(input.x, 0, input.y).normalized;
+        }
         protected override void Start()
         {
             #region initializing components
 
             base.Start();
             m_rb = GetComponent<Rigidbody>();
-            cam = transform.GetChild(0).GetComponent<Camera>();
+            //cam = transform.GetChild(0).GetComponent<Camera>();
             animator = transform.GetChild(1).GetComponent<Animator>();
 
             #endregion
@@ -103,10 +130,20 @@ namespace Scripts.Movement
 
             #region Camera Movement
 
-            rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
-            rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
-            cam.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
-            transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
+            //rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
+            //rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
+            //cam.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
+            transform.rotation = Quaternion.Euler(0, Camera.main.transform.rotation.eulerAngles.y, 0);
+
+            //if (direction.magnitude >= 0.1f)
+            //{
+            //    float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+            //    float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            //    transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+            //    Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            //    controller.Move(moveDir.normalized * currentSpeed * Time.deltaTime);
+            //}
 
             #endregion
 

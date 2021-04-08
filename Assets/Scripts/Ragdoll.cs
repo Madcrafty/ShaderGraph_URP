@@ -41,10 +41,10 @@ public class Ragdoll : MonoBehaviour
         Rigidbody[] tmp = GetComponentsInChildren<Rigidbody>();
         foreach (Rigidbody rb in tmp)
         {
-            if (rb != entity.GetComponent<Rigidbody>())
-            {
+            //if (rb != entity.GetComponent<Rigidbody>())
+            //{
                 rigidbodies.Add(rb);
-            } 
+            //} 
         }
         //player = GetComponent<Player>();
     }
